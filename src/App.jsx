@@ -40,7 +40,6 @@ const App = () => {
     observer.observe(loadingRef.current);
 
     return () => {
-      console.log("cleanup");
       loadingRef.current && observer.unobserve(loadingRef.current);
     };
   }, [images]);

@@ -10,6 +10,25 @@ const App = () => {
   const [images, setImages] = useState([]);
   const [isFetch, setIsFetch] = useState(true);
 
+  useEffect(() => {
+    fetchImages();
+  }, [isFetch]);
+
+  useEffect(() => {
+    let observer = new IntersectionObserver(observerCallback, { threshold: 1 });
+    observer.observe(loadingRef.current);
+
+    return () => {
+      loadingRef.current && observer.unobserve(loadingRef.current);
+    };
+  }, [images]);
+
+  const observerCallback = ([entry]) => {
+    if (entry.isIntersecting) {
+      setIsFetch(true);
+    }
+  };
+
   const fetchImages = async () => {
     if (isFetch) {
       let imageList = [];
@@ -23,26 +42,9 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    fetchImages();
-  }, [isFetch]);
-
-  useEffect(() => {
-    let observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsFetch(true);
-        }
-      },
-      { threshold: 1 }
-    );
-
-    observer.observe(loadingRef.current);
-
-    return () => {
-      loadingRef.current && observer.unobserve(loadingRef.current);
-    };
-  }, [images]);
+  const openImage = (imageIdx) => {
+    window.open(images[imageIdx]);
+  };
 
   return (
     <div className="outermost-container">
@@ -53,7 +55,12 @@ const App = () => {
             {images.map(
               (image, imageIdx) =>
                 imageIdx % COL_COUNT == colIdx && (
-                  <img key={imageIdx} className="image" src={image} />
+                  <img
+                    onClick={() => openImage(imageIdx)}
+                    key={imageIdx}
+                    className="image"
+                    src={image}
+                  />
                 )
             )}
           </div>
